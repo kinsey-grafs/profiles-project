@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-config
+  namespace: profiles-demo
+data:
+  endpoint: "http://opentelemetry-collector.observability.svc.cluster.local:4318"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pyroscope-config
+  namespace: profiles-demo
+data:
+  url: "http://pyroscope.observability.svc.cluster.local:4040"

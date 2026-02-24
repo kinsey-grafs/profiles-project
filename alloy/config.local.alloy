@@ -1,0 +1,43 @@
+// Grafana Alloy config - Local development
+// Receives OTLP traces and logs from Node.js apps; forwards to Tempo and Loki.
+// Use with: docker compose -f docker-compose-alloy.yml up -d
+
+otelcol.receiver.otlp "default" {
+  grpc {}
+  http {}
+
+  output {
+    traces = [otelcol.processor.batch.default.input]
+    logs   = [otelcol.processor.batch.logs.input]
+  }
+}
+
+otelcol.processor.batch "default" {
+  output {
+    traces = [otelcol.exporter.otlp.tempo.input]
+  }
+}
+
+otelcol.processor.batch "logs" {
+  output {
+    logs = [otelcol.exporter.otlphttp.loki.input]
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure = true
+    }
+  }
+}
+
+otelcol.exporter.otlphttp "loki" {
+  client {
+    endpoint = "http://loki:3100/otlp"
+    tls {
+      insecure = true
+    }
+  }
+}

@@ -1,0 +1,35 @@
+// Grafana Alloy config - Grafana Cloud (default)
+// Receives OTLP traces and logs from Node.js apps; forwards to Grafana Cloud.
+// Set env vars before running Alloy:
+//   GRAFANA_CLOUD_OTLP_ENDPOINT - e.g. https://tempo-XXXXX.grafana.net
+//   GRAFANA_CLOUD_OTLP_USER - your stack user ID
+//   GRAFANA_CLOUD_OTLP_API_KEY - your API key
+
+otelcol.receiver.otlp "default" {
+  grpc {}
+  http {}
+
+  output {
+    traces = [otelcol.processor.batch.default.input]
+    logs   = [otelcol.processor.batch.default.input]
+  }
+}
+
+otelcol.processor.batch "default" {
+  output {
+    traces = [otelcol.exporter.otlphttp.grafana_cloud.input]
+    logs   = [otelcol.exporter.otlphttp.grafana_cloud.input]
+  }
+}
+
+otelcol.auth.basic "grafana_cloud" {
+  username = env("GRAFANA_CLOUD_OTLP_USER")
+  password = env("GRAFANA_CLOUD_OTLP_API_KEY")
+}
+
+otelcol.exporter.otlphttp "grafana_cloud" {
+  client {
+    endpoint = env("GRAFANA_CLOUD_OTLP_ENDPOINT")
+    auth     = otelcol.auth.basic.grafana_cloud.handler
+  }
+}

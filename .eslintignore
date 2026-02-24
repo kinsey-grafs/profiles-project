@@ -1,0 +1,7 @@
+node_modules/
+instrumentation/node_modules/
+services/*/node_modules/
+dist/
+*.min.js
+grafana/dashboards/*.json
+k6/

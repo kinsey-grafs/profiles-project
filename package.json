@@ -1,0 +1,28 @@
+{
+  "name": "profiles-project",
+  "version": "1.0.0",
+  "description": "Node.js multi-service demo with OpenTelemetry tracing and Pyroscope CPU profiling for Grafana Cloud",
+"private": true,
+    "dependencies": {
+        "dotenv": "^16.4.5"
+    },
+    "scripts": {
+    "install:all": "npm install && cd instrumentation && npm install && cd ../services/api-gateway && npm install && cd ../backend && npm install",
+    "start:gateway": "OTEL_SERVICE_NAME=api-gateway node -r dotenv/config services/api-gateway/index.js",
+    "start:backend": "OTEL_SERVICE_NAME=backend node -r dotenv/config services/backend/index.js",
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:gateway\"",
+    "start:with-load": "concurrently \"npm run start:backend\" \"npm run start:gateway\" \"npm run load\"",
+    "lint": "eslint . --ext .js",
+    "load": "node scripts/load-generator.js",
+    "validate-env": "node scripts/validate-env.js",
+    "load:k6": "k6 run k6/load-test.js",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:alloy:up": "docker compose -f docker-compose-alloy.yml up -d",
+    "docker:alloy:down": "docker compose -f docker-compose-alloy.yml down"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "eslint": "^8.57.0"
+  }
+}
